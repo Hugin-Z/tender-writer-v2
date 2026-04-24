@@ -91,8 +91,7 @@ if errorlevel 1 (
     echo ========================================
     echo [安装失败] 可能原因及解决办法:
     echo   1. 网络问题 - 国内用户可用清华镜像:
-    echo      .venv\Scripts\python.exe -m pip install -r requirements.txt ^
-    echo      -i https://pypi.tuna.tsinghua.edu.cn/simple
+    echo      .venv\Scripts\python.exe -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
     echo   2. 缺少 C++ 构建工具 - 装 Visual Studio Build Tools
     echo   3. requirements.txt 包名有误 - 联系维护人
     echo ========================================

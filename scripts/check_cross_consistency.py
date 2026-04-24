@@ -35,6 +35,13 @@ _DAYS_RE = re.compile(r"(\d+)\s*(日历日|天|个日历日)")
 _PERSON_RE = re.compile(r"(\d+)\s*(人|位)")
 _D_PLUS_RE = re.compile(r"D\s*\+\s*(\d+)")
 
+# v2.0.1:团队语境词表。只有匹配"N 人/N 位"前 20 字窗口里含以下任一词,
+# 才视为团队规模数字,纳入成本估算。否则视为培训规模 / 服务对象 / 无关计数,过滤掉。
+_TEAM_CONTEXT_WORDS = (
+    "项目组", "团队", "项目经理", "技术骨干", "核心人员",
+    "专家", "工程师", "成员", "人员配置", "项目部",
+)
+
 
 def extract_docx_text(docx_path: Path) -> str:
     """把 docx 的段落和表格单元格拼成纯文本,供后续正则抽取。"""
@@ -77,7 +84,18 @@ def parse_d_plus(text: str) -> list[int]:
 
 
 def parse_people(text: str) -> list[int]:
-    return [int(m.group(1)) for m in _PERSON_RE.finditer(text)]
+    """
+    v2.0.1:只保留"N 人/N 位"前 20 字窗口里含团队语境词的匹配。
+    过滤培训规模(如"培训不少于 100 人")/ 服务对象(如"服务 3000 万群众")/
+    其他无关计数,避免团队成本估算误判。
+    """
+    out = []
+    for m in _PERSON_RE.finditer(text):
+        start = max(0, m.start() - 20)
+        ctx = text[start:m.start()]
+        if any(w in ctx for w in _TEAM_CONTEXT_WORDS):
+            out.append(int(m.group(1)))
+    return out
 
 
 # ─────────────────────────────────────────────

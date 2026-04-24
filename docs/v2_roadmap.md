@@ -83,6 +83,18 @@
 
 ---
 
+## 已知噪音警告(不影响产物,容忍即可)
+
+这一节登记 v2.0.0 工具链中已知的非 bug 噪音警告——产物本身没问题,但读合规报告会困惑。v2.1+ 视优先级决定是否改。
+
+### 1. compliance_check 对 `tender_response.docx` 报 missing 封面/目录 keywords
+
+- **根因**:封面(part_01 filled.docx,C 模式)和目录(v45_merge 合并后才有)在整标合并产物 `final_tender_package/final_response.docx` 中才存在;`output/tender_response.docx` 只是技术部分 A 模式片段容器,没有封面/目录。
+- **现象**:对 `tender_response.docx` 跑 `compliance_check.py` 会报 `missing 封面 keywords: 投标文件, 投标人` 和 `missing 目录 keywords: 目录` 两条警告。
+- **规避**:整标合规检查对 `final_tender_package/final_response.docx` 跑,不对 `output/tender_response.docx` 跑。两条警告在片段上下文不算 bug。
+- **v2.1 修复方向**:让 `compliance_check.py` 按文件名自动分流——文件名含 `final_response` 时全项检查,含 `tender_response` 时跳过封面/目录检查项(加 `--section-only` 开关)。
+- **相关文件**:`scripts/compliance_check.py::check_format` + `scripts/compliance_check.py::FORMAT_CHECKS`
+
 ## 整体记录
 
 | 候选 | 来源 | 状态 | 改动量 | 优先级 |

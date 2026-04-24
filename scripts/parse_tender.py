@@ -18,7 +18,7 @@ parse_tender.py · 招标文件解析脚本(阶段 1)
 
 输出:
     <out>/tender_brief.json   结构化 JSON 解析结果
-    <out>/tender_brief.md     基于 templates/tender_brief.md 填充的 markdown
+    <out>/tender_brief.md     基于 templates/stage_samples/tender_brief.md 填充的 markdown
 """
 
 import argparse

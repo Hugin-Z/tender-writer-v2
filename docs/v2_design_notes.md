@@ -1,7 +1,7 @@
 # tender-writer v2 设计决策记录
 
 > 生成时间:2026-04-22
-> 示范项目端到端重跑结果:11 合并片段 / 13 交付映射 / 0 失败
+> 示范项目端到端重跑结果:9 合并片段 / 11 交付映射 / 0 失败
 > v2 的设计决策清单基于 v1 迭代期累积的 26 条反馈。本报告对 v2 十个单元的改动范围,对照可识别的问题点做 diff,并说明每条的证据位置与解决状态。
 
 ## 解决率汇总
@@ -34,10 +34,10 @@
 
 | # | 问题 | 状态 | 证据 |
 |---|---|---|---|
-| 10 | P1 v45_merge Part 模式判断硬编码(示范项目只合并 6 片段) | ✅ 已解决 | `v45_merge.py::build_merge_order` 动态生成;端到端验证**11 片段** |
+| 10 | P1 v45_merge Part 模式判断硬编码(示范项目只合并 6 片段) | ✅ 已解决 | `v45_merge.py::build_merge_order` 动态生成;端到端验证**9 片段** |
 | 11 | P13 scoring_matrix 第 6 列 `[非 v1.1 范围]` 是内部版本术语 | ✅ 已解决 | `build_scoring_matrix.py` 改为"不适用(归属非技术部分,素材组装类/模板填充类)";`compliance_check.py` 对应报告文案同步 |
 | 12 | P16 ensure_reviewed 仅 CLI 闸门,内部函数可绕过 | ✅ 已解决 | `brief_schema.py::require_reviewed_for_brief` + `load_brief_guarded`;`check_cross_consistency.py` / `export_deliverables.py` 改走 guarded 读取;冒烟:删 `.reviewed` 后脚本 raise RuntimeError |
-| 13 | P19 export_deliverables DELIVERABLE_MAPPING 硬编码另一项目 | ✅ 已解决 | `export_deliverables.py::build_deliverable_mapping` 从 `response_file_parts` 动态生成;端到端验证**13 条映射**,含 A/B/C 三类子目录 |
+| 13 | P19 export_deliverables DELIVERABLE_MAPPING 硬编码另一项目 | ✅ 已解决 | `export_deliverables.py::build_deliverable_mapping` 从 `response_file_parts` 动态生成;端到端验证**11 条映射**,含 A/B/C 三类子目录 |
 | 14 | c_mode_fill 交互式 input() 阻塞 AI 自动化 | ✅ 已解决 | `c_mode_fill.py::make_placeholder` 返回字符串;取消 prompt_user;无法解析的变量渲染为红色加粗"【待填:xxx】" |
 | 15 | 缺批量命令(10 个 Part 分步跑 30+ 次 CLI) | ✅ 已解决 | `c_mode_run.py` / `b_mode_run.py` `--all` 批量;冒烟 **C 7 Part + B 3 Part 全 OK** |
 | 16 | 缺跨章节一致性检查(团队 17 人 × 预算的自相矛盾) | ✅ 已解决 | `check_cross_consistency.py` 3 类检查(D+N / 团队成本 / 金额);分级 fail/warn(×10 才 fail 避误判) |
@@ -58,7 +58,7 @@
 
 | # | 问题 | 状态 | 证据 |
 |---|---|---|---|
-| 24 | outline 从采购需求机械截取,不适配课题研究类项目 | ✅ 已解决 | `references/outline_templates/{engineering,platform,research,planning,other}` 五类模板 + `generate_outline.py::load_project_type` + `build_outline_from_template`;端到端示范项目:project_type=research 生效,outline.md 走 research 骨架(研究方案六大模块) |
+| 24 | outline 从采购需求机械截取,不适配课题研究类项目 | ✅ 已解决 | `references/outline_templates/{engineering,platform,research,planning,other}` 五类模板 + `generate_outline.py::load_project_type` + `build_outline_from_template`;端到端示范项目:project_type=other 生效,outline.md 走 other 模板(以 platform 为默认基础) |
 | 25 | Word 上游直切能力缺失(docx 源项目也走 PDF 切模板链) | 🟡 部分解决 | `c_mode_docx_passthrough.py` 实现 + mock 项目 fixture 验证直切 5 段 + 字体归一化;但仅提供独立脚本,未集成到 `c_mode_run.py` 自动分流(v3 可继续) |
 | 26 | 缺一个已知问题的常驻 TODO(正文级缝合句检测) | 🟡 部分解决 | `check_chapter.py` L148-154 加 TODO(v3 候选);实际扩展留到下轮 |
 
@@ -77,14 +77,14 @@
 | 步骤 | 产物 | 数量 |
 |---|---|---|
 | build_scoring_matrix | scoring_matrix.csv 第 6 列 | 5 行"待阶段 3 回填" + 3 行"不适用(...素材组装类/模板填充类)"(P13 新文案) |
-| generate_outline | outline.md | 头行 `project_type=research`;走 research 模板六大研究方向(单元 1) |
-| append_chapter × 7 | tender_response.docx 段落 28 / 表 16 / 图 18 / 空格清理 39 处 | 单元 4 渲染 + 空格清理全生效 |
+| generate_outline | outline.md | 头行 `project_type=other`;走 other 模板(以 platform 为默认基础)(单元 1) |
+| append_chapter × 5 | tender_response.docx 段落 127 / 表 3 / 图占位 10 | 单元 4 渲染 + 空格清理全生效 |
 | check_cross_consistency | — | 0 失败 / 0 警告(team=0 人跳过) |
 | compliance_check | compliance_report.md | 2 警告 / 0 失败 |
 | c_mode_run --all | 7 个 filled.docx + 53 红色占位 run | 单元 8 非交互 + 红色占位 + 幂等 |
 | b_mode_run --all | 3 个 assembled.docx + .pending_marker | 单元 8 批量 |
-| v45_merge | final_response.docx 76KB | **合并 11 片段**(v1 仅 6);3 pending;1 C-reference 转 ops_checklist |
-| export_deliverables | 投标交付物/ 中文目录 | **13 条映射**(v1 是其他项目硬编码,不通用);顶层 2 + C 模式 7 + B 模式 3 + A 模式 1 |
+| v45_merge | final_response.docx 43KB | **合并 9 片段**(v1 硬编码为其他项目);2 pending;1 C-reference 转 ops_checklist |
+| export_deliverables | 投标交付物/ 中文目录 | **11 条映射**(v1 是其他项目硬编码,不通用);顶层 2 + C 模式 6 + B 模式 2 + A 模式 1 |
 
 ---
 
@@ -121,7 +121,7 @@
 ## v2 完成判据
 
 - ✅ 解决率 22/26 = 84.6% ≥ 80%
-- ✅ 示范项目端到端无 fail 跑通(11 合并片段 + 13 交付映射)
+- ✅ 示范项目端到端无 fail 跑通(9 合并片段 + 11 交付映射)
 - ✅ 所有单元均有证据支持(XML dump / 冒烟命令行输出 / fixture 全通过)
 
 **v2 完成**。v3 候选 3 项:

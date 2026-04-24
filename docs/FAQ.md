@@ -38,3 +38,18 @@
 3. **真实招标文件原件放在 `projects/<你的项目>/input/` 下,别放仓库根目录**。`.gitignore` 已默认忽略该路径(demo 是白名单例外)——把原件放到 `input/` 下,git 不会追踪;放到根目录或别处,就会进 commit。
 
 4. **多家 own 主体时停下让你选**。若你 `companies.yaml` 有 ≥2 家合格 own,`select_bidding_entity.py` 会交互式让你选编号,AI 不会代选(见 `CLAUDE.md` **红线 6**)。非交互跑用 `--entity-id <id>` 明示,否则会报缺参数退出。
+
+## Q4: 扫描版 PDF 招标文件能直接跑 `parse_tender.py` 吗?
+
+**不能,要先 OCR 转成文字版 PDF**。工具链的 PDF 解析走 `pdfplumber` 的 `extract_text()` 和 `extract_tables()`,这两个 API 只读 PDF 内嵌文字流,不识别图像像素。招标文件 PDF 有两种来源:
+
+- **原生文字版**(从 Word / WPS 直接导出为 PDF):内嵌文字流,可直接跑 `parse_tender.py`。判别方法:用 Acrobat / Foxit 打开,能选中复制文字 = 文字版。
+- **扫描版**(纸质文件扫描成图):每页是图像,没有文字流。`parse_tender.py` 跑完后 `tender_raw.txt` 基本空白,`extracted` 全部留空,下游全链路作废。
+
+**处理扫描版的推荐流程**:
+
+1. 用 Adobe Acrobat Pro(付费)或 WPS 专业版的"文字识别/OCR"功能,把扫描版 PDF 转成"可检索 PDF"(原图 + 识别出的文字层),保存为新文件
+2. 或用开源 OCR:`ocrmypdf input.pdf output.pdf -l chi_sim`(需提前 `pip install ocrmypdf` 并安装 tesseract 中文包)
+3. 转完后再跑 `parse_tender.py` 对 OCR 版 PDF
+
+**特别注意**:OCR 有错字率,关键字段(项目预算、工期、★/▲ 条款原文、资质门槛数字)在 tender_brief.md review 时务必逐字核对 `tender_raw.txt` 里 OCR 出来的原文——reading review 通过 `.reviewed` 闸门的意义在扫描版场景下权重更高。

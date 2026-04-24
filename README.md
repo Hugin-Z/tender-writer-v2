@@ -2,7 +2,7 @@
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg) ![Python](https://img.shields.io/badge/Python-3.11%2B-blue) ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey) ![AI](https://img.shields.io/badge/AI-Claude%20Code%20%7C%20Cline-orange)
 
-> 把政府类项目技术标从 3 小时人工压到 2 分钟 AI 协作。
+> 把政府类项目技术标的首轮结构化拆解与初稿组装压缩到分钟级;正式投标仍需人工扩写、校核和审稿。
 
 <!-- TODO: 30 秒 Demo 动图或截图位,待作者补 -->
 

@@ -48,3 +48,22 @@ assets/**/_inbox/*
 !assets/**/_inbox/.gitkeep
 assets/**/_raw/*
 !assets/**/_raw/.gitkeep
+
+# 素材摄入去重记录(运行时产物)
+assets/.ingest_history.json
+
+# 真实项目目录默认不入库(保护客户招标文件、投标产物)
+# demo 是例外,保留入库供公开演示
+projects/*/input/
+projects/*/output/
+projects/*/final_tender_package/
+projects/*/投标交付物/
+!projects/demo_cadre_training/
+!projects/demo_cadre_training/**
+
+# demo 白名单是为了让 demo_cadre_training 的 output/input/final_tender_package/投标交付物
+# 入 git 作为公开演示。但 .reviewed 闸门文件是例外:即使在 demo 里也不入 git,
+# 确保所有用户(包括 clone demo 跑一遍的)都经历一次手动 touch 的演练,
+# 对齐 CLAUDE.md 红线 1"AI 不得代建用户闸门文件"。
+# gitignore 最后匹配规则生效,此行覆盖上方白名单对 .reviewed 的放行。
+projects/demo_cadre_training/**/*.reviewed

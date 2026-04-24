@@ -1,0 +1,50 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Microsoft Office / WPS 打开 docx/xlsx 时的临时锁文件
+~$*
+
+# Editor / IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Claude Code 本地配置(含机器绝对路径)
+.claude/
+
+# Logs
+*.log
+
+# 用户 review 闸门标记(运行时产物,不入版本控制;首次跑 demo 时由用户 touch 产生)
+*.reviewed
+
+# 临时测试产物
+/tmp/roundb_*
+*.tmp
+*.bak
+
+# _inbox_unsorted 下的真实素材(保留 .md 文档和 .gitkeep 占位,其他一律忽略)
+_inbox_unsorted/*
+!_inbox_unsorted/README.md
+!_inbox_unsorted/.gitkeep
+!_inbox_unsorted/_raw/
+_inbox_unsorted/_raw/*
+!_inbox_unsorted/_raw/.gitkeep
+
+# assets 下每个公司的 _inbox 和 _raw 原始素材(只保留 .gitkeep 占位)
+assets/**/_inbox/*
+!assets/**/_inbox/.gitkeep
+assets/**/_raw/*
+!assets/**/_raw/.gitkeep

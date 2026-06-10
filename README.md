@@ -7,9 +7,8 @@
 <!-- TODO: 30 秒 Demo 动图或截图位,待作者补 -->
 
 ---
-> ⚠️ **此仓库为 v2 版本，已停止维护**。
-> v3.0.0 以独立仓库形式继承演进：[Hugin-Z/tender-writer-v3](https://github.com/Hugin-Z/tender-writer-v3)
-> v3 完整改进清单见 [tender-writer-v3 v3.0.0 Release](https://github.com/Hugin-Z/tender-writer-v3/releases/tag/v3.0.0)
+> [!WARNING]
+> **本仓库已停止维护**,最新活跃版本见 [Hugin-Z/tender-writer-v4](https://github.com/Hugin-Z/tender-writer-v4)。
 
 
 
